@@ -71,6 +71,26 @@ configure_and_start_service() {
     echo "O serviço do proxy na porta $PORT foi configurado e iniciado automaticamente."
 }
 
+stop_and_remove_service() {
+    read -p "Digite o número do serviço a ser parado e removido: " service_number
+    
+    # Parar o serviço
+    sudo systemctl stop proxy-$service_number
+    
+    # Desabilitar o serviço
+    sudo systemctl disable proxy-$service_number
+    
+    # Encontrar e remover o arquivo do serviço
+    service_file=$(find /etc/systemd/system -name "proxy-$service_number.service")
+    if [ -f "$service_file" ]; then
+        sudo rm "$service_file"
+        echo "Arquivo de serviço removido: $service_file"
+    else
+        echo "Arquivo de serviço não encontrado para o serviço proxy-$service_number."
+    fi
+    
+    echo "Serviço proxy-$service_number parado e removido."
+}
 
 
 # Menu de gerenciamento
@@ -92,11 +112,7 @@ while true; do
             configure_and_start_service
         ;;
         2)
-            echo "Serviços em execução:"
-            systemctl list-units --type=service --state=running | grep proxy-
-            read -p "Digite o número do serviço a ser parado: " service_number
-            sudo systemctl stop proxy-$service_number
-            echo "Serviço proxy-$service_number parado."
+            stop_and_remove_service
         ;;
         3)
             echo "Serviços em execução:"
@@ -109,6 +125,7 @@ while true; do
             systemctl list-units --type=service --state=running | grep proxy-
         ;;
         5)
+            echo "Desinstalando o proxy antes de reinstalar..."
             uninstall_proxy
             install_proxy
         ;;
