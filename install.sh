@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#!/bin/bash
+
 # Função para instalar o proxy
 install_proxy() {
     echo "Instalando o proxy..."
@@ -104,13 +106,13 @@ while true; do
         ;;
         3)
             echo "Serviços em execução:"
-            systemctl list-units --type=service --state=running | grep proxy_
+            systemctl list-units --type=service --state=running | grep proxy_service
             read -p "Digite o número do serviço a ser reiniciado: " service_number
-            sudo systemctl restart proxy_$service_number
-            echo "Serviço proxy_$service_number reiniciado."
+            sudo systemctl restart proxy_service$service_number
+            echo "Serviço proxy_service$service_number reiniciado."
         ;;
         4)
-            systemctl list-units --type=service --state=running | grep proxy_
+            systemctl list-units --type=service --state=running | grep proxy_service
         ;;
         5)
             uninstall_proxy
