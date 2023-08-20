@@ -13,15 +13,29 @@ install_proxy() {
 
 uninstall_proxy() {
     echo -e "\nDesinstalando o proxy..."
-    
-    # Encontra e remove todos os arquivos de serviço do proxy
-    find /etc/systemd/system -name 'proxy-*.service' -exec sudo systemctl stop {} \;
-    find /etc/systemd/system -name 'proxy-*.service' -exec sudo systemctl disable {} \;
-    find /etc/systemd/system -name 'proxy-*.service' -exec sudo rm {} \;
 
+    # Encontra e remove todos os arquivos de serviço do proxy
+    service_files=$(find /etc/systemd/system -name 'proxy-*.service')
+    for service_file in $service_files; do
+        service_name=$(basename "$service_file")
+        service_name=${service_name%.service}
+        
+        # Verifica se o serviço está ativo antes de tentar parar e desabilitar
+        if sudo systemctl is-active "$service_name" &> /dev/null; then
+            sudo systemctl stop "$service_name"
+            sudo systemctl disable "$service_name"
+        fi
+        
+        sudo rm -f "$service_file"
+        echo "Serviço $service_name parado e arquivo de serviço removido: $service_file"
+    done
+
+    # Remove o arquivo binário do proxy
     sudo rm -f /usr/bin/proxy
+    
     echo "Proxy desinstalado com sucesso."
 }
+
 
 
 
