@@ -35,6 +35,19 @@ configure_and_start_service() {
     read -p "Digite o conteúdo da resposta HTTP (--response): " RESPONSE
     read -p "Você quer usar apenas SSH (Y/N)? [Y/N]: " SSH_ONLY
     
+    # Defina as opções de comando
+    OPTIONS="--port $PORT"
+    
+    if [[ $HTTP_OR_HTTPS == "S" || $HTTP_OR_HTTPS == "s" ]]; then
+        OPTIONS="$OPTIONS --https --cert $CERT_PATH"
+    else
+        OPTIONS="$OPTIONS --http"
+    fi
+    
+    if [[ $SSH_ONLY == "Y" || $SSH_ONLY == "y" ]]; then
+        OPTIONS="$OPTIONS --ssh-only"
+    fi
+    
     # Crie o arquivo de serviço
     SERVICE_FILE="/etc/systemd/system/proxy-$PORT.service"
     echo "[Unit]" > $SERVICE_FILE
@@ -42,21 +55,11 @@ configure_and_start_service() {
     echo "After=network.target" >> $SERVICE_FILE
     echo "" >> $SERVICE_FILE
     echo "[Service]" >> $SERVICE_FILE
-    echo "ExecStart=/usr/bin/proxy --port $PORT \\" >> $SERVICE_FILE
-    if [[ $HTTP_OR_HTTPS == "S" || $HTTP_OR_HTTPS == "s" ]]; then
-        echo "--https --cert $CERT_PATH \\" >> $SERVICE_FILE
-    else
-        echo "--http \\" >> $SERVICE_FILE
-    fi
-    echo "--response \"$RESPONSE\" \\" >> $SERVICE_FILE
-    if [[ $SSH_ONLY == "Y" || $SSH_ONLY == "y" ]]; then
-        echo "--ssh-only \\" >> $SERVICE_FILE
-    fi
+    echo "ExecStart=/usr/bin/proxy $OPTIONS --response \"$RESPONSE\"" >> $SERVICE_FILE
     echo "Restart=always" >> $SERVICE_FILE
     echo "" >> $SERVICE_FILE
     echo "[Install]" >> $SERVICE_FILE
     echo "WantedBy=multi-user.target" >> $SERVICE_FILE
-    
     
     # Recarregue o systemd
     sudo systemctl daemon-reload
