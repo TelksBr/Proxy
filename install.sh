@@ -1,6 +1,5 @@
 #!/bin/bash
 
-#!/bin/bash
 
 # Função para instalar o proxy
 install_proxy() {
@@ -24,10 +23,6 @@ uninstall_proxy() {
     sudo rm -f /usr/bin/proxy
     echo "Proxy desinstalado com sucesso."
 }
-
-
-
-
 
 # Configurar e iniciar o serviço
 configure_and_start_service() {
