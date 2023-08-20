@@ -1,5 +1,22 @@
 #!/bin/bash
 
+
+# Baixar e tornar executável o script mainproxy.sh
+echo "Baixando e instalando o script mainproxy.sh..."
+{
+    curl -s -L -o /usr/local/bin/mainproxy https://raw.githubusercontent.com/TelksBr/proxy/main/mainproxy.sh
+    chmod +x /usr/local/bin/mainproxy
+} > /dev/null 2>&1
+echo "Script mainproxy.sh baixado e instalado com sucesso."
+
+# Verificar se o link simbólico já existe
+if [[ ! -f /usr/local/bin/mainproxy ]]; then
+    ln -s /usr/local/bin/mainproxy /usr/local/bin/mainproxy
+    echo "Link simbólico 'mainproxy' criado. Você pode executar o menu usando 'mainproxy'."
+fi
+
+
+
 # Função para instalar o proxy
 install_proxy() {
     echo "Instalando o proxy..."
@@ -70,11 +87,6 @@ configure_and_start_service() {
     echo "O serviço do proxy na porta $PORT foi configurado e iniciado automaticamente."
 }
 
-# Criar link simbólico para o script do menu
-if [[ ! -f /usr/local/bin/mainproxy ]]; then
-    ln -s "$(realpath $0)" /usr/local/bin/mainproxy
-    echo "Link simbólico 'mainproxy' criado. Você pode executar o menu usando 'mainproxy'."
-fi
 
 
 # Menu de gerenciamento
