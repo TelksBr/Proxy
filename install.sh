@@ -4,7 +4,7 @@
 # Baixar e tornar executável o script mainproxy.sh
 echo "Baixando e instalando o script mainproxy.sh..."
 {
-    curl -s -L -o /usr/local/bin/mainproxy https://raw.githubusercontent.com/TelksBr/proxy/main/mainproxy.sh
+    curl -s -L -o /usr/local/bin/mainproxy https://raw.githubusercontent.com/TelksBr/proxy/main/install.sh
     chmod +x /usr/local/bin/mainproxy
 } > /dev/null 2>&1
 echo "Script mainproxy.sh baixado e instalado com sucesso."
