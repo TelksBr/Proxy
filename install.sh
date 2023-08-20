@@ -15,9 +15,9 @@ uninstall_proxy() {
     echo -e "\nDesinstalando o proxy..."
     
     # Encontra e remove todos os arquivos de serviço do proxy
-    find /etc/systemd/system -name 'proxy_service*.service' -exec sudo systemctl stop {} \;
-    find /etc/systemd/system -name 'proxy_service*.service' -exec sudo systemctl disable {} \;
-    find /etc/systemd/system -name 'proxy_service*.service' -exec sudo rm {} \;
+    find /etc/systemd/system -name 'proxy_*.service' -exec sudo systemctl stop {} \;
+    find /etc/systemd/system -name 'proxy_*.service' -exec sudo systemctl disable {} \;
+    find /etc/systemd/system -name 'proxy_*.service' -exec sudo rm {} \;
 
     sudo rm -f /usr/bin/proxy
     echo "Proxy desinstalado com sucesso."
@@ -38,7 +38,7 @@ configure_and_start_service() {
     read -p "Você quer usar apenas SSH (Y/N)? [Y/N]: " SSH_ONLY
     
     # Crie o arquivo de serviço
-    SERVICE_FILE="/etc/systemd/system/proxy_service$PORT.service"
+    SERVICE_FILE="/etc/systemd/system/proxy_$PORT.service"
     echo "[Unit]" > $SERVICE_FILE
     echo "Description=Proxy Service on Port $PORT" >> $SERVICE_FILE
     echo "After=network.target" >> $SERVICE_FILE
@@ -64,8 +64,8 @@ configure_and_start_service() {
     sudo systemctl daemon-reload
     
     # Inicie o serviço e configure o início automático
-    sudo systemctl start proxy_service$PORT
-    sudo systemctl enable proxy_service$PORT
+    sudo systemctl start proxy_$PORT
+    sudo systemctl enable proxy_$PORT
     
     echo "O serviço do proxy na porta $PORT foi configurado e iniciado automaticamente."
 }
@@ -97,20 +97,20 @@ while true; do
         ;;
         2)
             echo "Serviços em execução:"
-            systemctl list-units --type=service --state=running | grep proxy_service
+            systemctl list-units --type=service --state=running | grep proxy_
             read -p "Digite o número do serviço a ser parado: " service_number
-            sudo systemctl stop proxy_service$service_number
-            echo "Serviço proxy_service$service_number parado."
+            sudo systemctl stop proxy_$service_number
+            echo "Serviço proxy_$service_number parado."
         ;;
         3)
             echo "Serviços em execução:"
-            systemctl list-units --type=service --state=running | grep proxy_service
+            systemctl list-units --type=service --state=running | grep proxy_
             read -p "Digite o número do serviço a ser reiniciado: " service_number
-            sudo systemctl restart proxy_service$service_number
-            echo "Serviço proxy_service$service_number reiniciado."
+            sudo systemctl restart proxy_$service_number
+            echo "Serviço proxy_$service_number reiniciado."
         ;;
         4)
-            systemctl list-units --type=service --state=running | grep proxy_service
+            systemctl list-units --type=service --state=running | grep proxy_
         ;;
         5)
             uninstall_proxy
