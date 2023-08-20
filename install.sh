@@ -38,7 +38,7 @@ configure_and_start_service() {
     read -p "Você quer usar apenas SSH (Y/N)? [Y/N]: " SSH_ONLY
     
     # Crie o arquivo de serviço
-    SERVICE_FILE="/etc/systemd/system/proxy_serviceservice$PORT.service"
+    SERVICE_FILE="/etc/systemd/system/proxy_service$PORT.service"
     echo "[Unit]" > $SERVICE_FILE
     echo "Description=Proxy Service on Port $PORT" >> $SERVICE_FILE
     echo "After=network.target" >> $SERVICE_FILE
@@ -64,8 +64,8 @@ configure_and_start_service() {
     sudo systemctl daemon-reload
     
     # Inicie o serviço e configure o início automático
-    sudo systemctl start proxy_serviceservice$PORT
-    sudo systemctl enable proxy_serviceservice$PORT
+    sudo systemctl start proxy_service$PORT
+    sudo systemctl enable proxy_service$PORT
     
     echo "O serviço do proxy na porta $PORT foi configurado e iniciado automaticamente."
 }
