@@ -1,22 +1,5 @@
 #!/bin/bash
 
-
-# Baixar e tornar executável o script mainproxy.sh
-echo "Baixando e instalando o script mainproxy.sh..."
-{
-    curl -s -L -o /usr/local/bin/mainproxy https://raw.githubusercontent.com/TelksBr/proxy/main/install.sh
-    chmod +x /usr/local/bin/mainproxy
-} > /dev/null 2>&1
-echo "Script mainproxy.sh baixado e instalado com sucesso."
-
-# Verificar se o link simbólico já existe
-if [[ ! -f /usr/local/bin/mainproxy ]]; then
-    ln -s /usr/local/bin/mainproxy /usr/local/bin/mainproxy
-    echo "Link simbólico 'mainproxy' criado. Você pode executar o menu usando 'mainproxy'."
-fi
-
-
-
 # Função para instalar o proxy
 install_proxy() {
     echo "Instalando o proxy..."
@@ -32,15 +15,13 @@ uninstall_proxy() {
     echo -e "\nDesinstalando o proxy..."
     
     # Encontra e remove todos os arquivos de serviço do proxy
-    find /etc/systemd/system -name 'proxy_*.service' -exec sudo systemctl stop {} \;
-    find /etc/systemd/system -name 'proxy_*.service' -exec sudo systemctl disable {} \;
-    find /etc/systemd/system -name 'proxy_*.service' -exec sudo rm {} \;
+    find /etc/systemd/system -name 'proxy-*.service' -exec sudo systemctl stop {} \;
+    find /etc/systemd/system -name 'proxy-*.service' -exec sudo systemctl disable {} \;
+    find /etc/systemd/system -name 'proxy-*.service' -exec sudo rm {} \;
 
     sudo rm -f /usr/bin/proxy
     echo "Proxy desinstalado com sucesso."
 }
-
-
 
 
 
@@ -55,7 +36,7 @@ configure_and_start_service() {
     read -p "Você quer usar apenas SSH (Y/N)? [Y/N]: " SSH_ONLY
     
     # Crie o arquivo de serviço
-    SERVICE_FILE="/etc/systemd/system/proxy_$PORT.service"
+    SERVICE_FILE="/etc/systemd/system/proxy-$PORT.service"
     echo "[Unit]" > $SERVICE_FILE
     echo "Description=Proxy Service on Port $PORT" >> $SERVICE_FILE
     echo "After=network.target" >> $SERVICE_FILE
@@ -81,8 +62,8 @@ configure_and_start_service() {
     sudo systemctl daemon-reload
     
     # Inicie o serviço e configure o início automático
-    sudo systemctl start proxy_$PORT
-    sudo systemctl enable proxy_$PORT
+    sudo systemctl start proxy-$PORT
+    sudo systemctl enable proxy-$PORT
     
     echo "O serviço do proxy na porta $PORT foi configurado e iniciado automaticamente."
 }
@@ -109,20 +90,20 @@ while true; do
         ;;
         2)
             echo "Serviços em execução:"
-            systemctl list-units --type=service --state=running | grep proxy_
+            systemctl list-units --type=service --state=running | grep proxy-
             read -p "Digite o número do serviço a ser parado: " service_number
-            sudo systemctl stop proxy_$service_number
-            echo "Serviço proxy_$service_number parado."
+            sudo systemctl stop proxy-$service_number
+            echo "Serviço proxy-$service_number parado."
         ;;
         3)
             echo "Serviços em execução:"
-            systemctl list-units --type=service --state=running | grep proxy_
+            systemctl list-units --type=service --state=running | grep proxy-
             read -p "Digite o número do serviço a ser reiniciado: " service_number
-            sudo systemctl restart proxy_$service_number
-            echo "Serviço proxy_$service_number reiniciado."
+            sudo systemctl restart proxy-$service_number
+            echo "Serviço proxy-$service_number reiniciado."
         ;;
         4)
-            systemctl list-units --type=service --state=running | grep proxy_
+            systemctl list-units --type=service --state=running | grep proxy-
         ;;
         5)
             uninstall_proxy
