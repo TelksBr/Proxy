@@ -44,21 +44,7 @@ configure_and_start_service() {
         read -p "Digite o caminho do certificado (--cert): " CERT_PATH
     fi
     read -p "Digite o conteúdo da resposta HTTP (--response): " RESPONSE
-    read -p "Escolha a cor do texto (1 - 5): " TEXT_COLOR
     read -p "Você quer usar apenas SSH (Y/N)? [Y/N]: " SSH_ONLY
-    
-    # Cores ANSI
-    colors=("31" "32" "33" "34" "35" "36" "37")
-
-    # Verificar se a cor escolhida está dentro do intervalo válido
-    if [ "$TEXT_COLOR" -ge 1 ] && [ "$TEXT_COLOR" -le 7 ]; then
-        TEXT_COLOR_CODE="${colors[$((TEXT_COLOR - 1))]}"
-        
-        # Exibir a resposta colorida
-        echo -e "\e[${TEXT_COLOR_CODE}m$RESPONSE\e[0m"
-    else
-        echo "Cor escolhida está fora do intervalo válido."
-    fi
     
     # Defina as opções de comando
     OPTIONS="--port $PORT"
