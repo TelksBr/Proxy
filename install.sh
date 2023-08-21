@@ -103,10 +103,33 @@ stop_and_remove_service() {
     echo "Serviço proxy-$service_number parado e removido."
 }
 
-# Criar link simbólico para o script do menu
-if [[ ! -f /usr/local/bin/mainproxy ]]; then
-    ln -s "$(realpath $0)" /usr/local/bin/mainproxy
-    echo "Link simbólico 'mainproxy' criado. Você pode executar o menu usando 'mainproxy'."
+#!/bin/bash
+
+# Função para baixar o install.sh e criar o link simbólico
+download_and_configure_install_script() {
+    # Baixar o install.sh
+    curl -s -L -o /usr/local/bin/installproxy https://raw.githubusercontent.com/TelksBr/proxy/main/install.sh
+    chmod +x /usr/local/bin/installproxy
+
+    # Criar o link simbólico
+    ln -s /usr/local/bin/installproxy /usr/local/bin/mainproxy
+    echo "Script installproxy baixado e configurado. Você pode executar o menu usando 'mainproxy'."
+}
+
+# Verificar se o script installproxy já existe
+if [[ ! -f /usr/local/bin/installproxy ]]; then
+    download_and_configure_install_script
+fi
+
+# ... (restante do seu script)
+
+# Menu de gerenciamento
+while true; do
+    clear
+    echo "Menu de Gerenciamento do Serviço Proxy:"
+    # ... (restante do seu menu)
+done
+
 fi
 
 # Menu de gerenciamento
