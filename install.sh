@@ -69,11 +69,12 @@ configure_and_start_service() {
     echo "Type=simple" >> "$SERVICE_FILE"
     echo "User=root" >> "$SERVICE_FILE"
     echo "WorkingDirectory=/root" >> "$SERVICE_FILE"
-    echo "ExecStart=/usr/bin/proxy $OPTIONS --response \"$RESPONSE\" --buffer-size 2048 --workers 5000" >> "$SERVICE_FILE" 
+    echo "ExecStart=/usr/bin/proxy $OPTIONS --buffer-size 2048 --workers 5000 --response $RESPONSE" >> "$SERVICE_FILE" # Parâmetro --response no final
     echo "Restart=always" >> "$SERVICE_FILE"
     echo "" >> "$SERVICE_FILE"
     echo "[Install]" >> "$SERVICE_FILE"
     echo "WantedBy=multi-user.target" >> "$SERVICE_FILE"
+    
     
     
     # Recarregue o systemd
