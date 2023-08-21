@@ -14,7 +14,7 @@ else
         } > /dev/null 2>&1
         echo "Proxy instalado com sucesso."
     }
-
+    
     # Instalar o proxy
     install_proxy
 fi
@@ -118,10 +118,17 @@ stop_and_remove_service() {
 }
 
 # Criar link simbólico para o script do menu
-if [[ ! -f /usr/local/bin/mainproxy ]]; then
-    ln -s "$(realpath $0)" /usr/local/bin/mainproxy
+SCRIPT_PATH=$(realpath "$0")
+SCRIPT_DIR=$(dirname "$SCRIPT_PATH")
+LINK_NAME="/usr/local/bin/mainproxy"
+
+if [[ ! -f "$LINK_NAME" ]]; then
+    ln -s "$SCRIPT_PATH" "$LINK_NAME"
     echo "Link simbólico 'mainproxy' criado. Você pode executar o menu usando 'mainproxy'."
+else
+    echo "Link simbólico 'mainproxy' já existe."
 fi
+
 
 
 
