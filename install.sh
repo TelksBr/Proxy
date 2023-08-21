@@ -112,7 +112,7 @@ fi
 # Função para editar parâmetros de um serviço existente
 edit_service_params() {
     read -p "Digite o número do serviço a ser editado: " service_number
-    service_file=$(find /etc/systemd/system -name "proxy-$service_number.service")
+    service_file=$(find /etc/systemd/system -name "proxy-$service_number.service" -print -quit)
     if [ -f "$service_file" ]; then
         echo "Editando parâmetros do serviço proxy-$service_number..."
         
@@ -143,7 +143,7 @@ edit_service_params() {
         
         echo "Parâmetros do serviço proxy-$service_number atualizados com sucesso."
     else
-        echo "Arquivo de serviço não encontrado para o serviço proxy-$service_number."
+        echo "Arquivo de serviço não encontrado para o serviço proxy-$service_number.service"
     fi
 }
 
