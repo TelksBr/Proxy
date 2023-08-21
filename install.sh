@@ -118,8 +118,7 @@ while true; do
     echo "3. Reiniciar um Serviço"
     echo "4. Ver Status dos Serviços"
     echo "5. Reinstalar o Proxy"
-    echo "6. Desinstalar o Proxy"
-    echo "7. Sair"
+    echo "6. Sair"
     
     read -p "Escolha uma opção: " choice
     
@@ -146,9 +145,6 @@ while true; do
             install_proxy
         ;;
         6)
-            uninstall_proxy
-        ;;
-        7)
             echo "Saindo."
             break
         ;;
