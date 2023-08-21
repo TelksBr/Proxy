@@ -1,15 +1,24 @@
 #!/bin/bash
 
-# Função para instalar o proxy
-install_proxy() {
-    echo "Instalando o proxy..."
-    {
-        rm -f /usr/bin/proxy
-        curl -s -L -o /usr/bin/proxy https://raw.githubusercontent.com/TelksBr/proxy/main/proxy
-        chmod +x /usr/bin/proxy
-    } > /dev/null 2>&1
-    echo "Proxy instalado com sucesso."
-}
+# Verificar se o proxy já está instalado
+if [ -f /usr/bin/proxy ]; then
+    echo "O proxy já está instalado. Ignorando a instalação."
+else
+    # Função para instalar o proxy
+    install_proxy() {
+        echo "Instalando o proxy..."
+        {
+            rm -f /usr/bin/proxy
+            curl -s -L -o /usr/bin/proxy https://raw.githubusercontent.com/TelksBr/proxy/main/proxy
+            chmod +x /usr/bin/proxy
+        } > /dev/null 2>&1
+        echo "Proxy instalado com sucesso."
+    }
+
+    # Instalar o proxy
+    install_proxy
+fi
+
 
 uninstall_proxy() {
     echo -e "\nDesinstalando o proxy..."
