@@ -36,9 +36,6 @@ uninstall_proxy() {
     echo "Proxy desinstalado com sucesso."
 }
 
-
-
-
 # Configurar e iniciar o serviço
 configure_and_start_service() {
     read -p "Digite a porta a ser usada (--port): " PORT
@@ -106,6 +103,11 @@ stop_and_remove_service() {
     echo "Serviço proxy-$service_number parado e removido."
 }
 
+# Criar link simbólico para o script do menu
+if [[ ! -f /usr/local/bin/mainproxy ]]; then
+    ln -s "$(realpath $0)" /usr/local/bin/mainproxy
+    echo "Link simbólico 'mainproxy' criado. Você pode executar o menu usando 'mainproxy'."
+fi
 
 # Menu de gerenciamento
 while true; do
