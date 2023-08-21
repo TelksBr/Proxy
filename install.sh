@@ -109,43 +109,7 @@ if [[ ! -f /usr/local/bin/mainproxy ]]; then
     echo "Link simbólico 'mainproxy' criado. Você pode executar o menu usando 'mainproxy'."
 fi
 
-# Função para editar parâmetros de um serviço existente
-edit_service_params() {
-    read -p "Digite o número do serviço a ser editado: " service_number
-    service_file=$(find /etc/systemd/system -name "proxy-$service_number.service" -print -quit)
-    if [ -f "$service_file" ]; then
-        echo "Editando parâmetros do serviço proxy-$service_number..."
-        
-        # Coletar as informações atualizadas do usuário
-        read -p "Digite a porta a ser usada (--port): " PORT
-        read -p "Você quer usar HTTP (H) ou HTTPS (S)? [H/S]: " HTTP_OR_HTTPS
-        if [[ $HTTP_OR_HTTPS == "S" || $HTTP_OR_HTTPS == "s" ]]; then
-            read -p "Digite o caminho do certificado (--cert): " CERT_PATH
-        fi
-        read -p "Digite o conteúdo da resposta HTTP (--response): " RESPONSE
-        read -p "Você quer usar apenas SSH (Y/N)? [Y/N]: " SSH_ONLY
-        
-        # Defina as opções de comando
-        OPTIONS="--port $PORT"
-        
-        if [[ $HTTP_OR_HTTPS == "S" || $HTTP_OR_HTTPS == "s" ]]; then
-            OPTIONS="$OPTIONS --https --cert $CERT_PATH"
-        else
-            OPTIONS="$OPTIONS --http"
-        fi
-        
-        if [[ $SSH_ONLY == "Y" || $SSH_ONLY == "y" ]]; then
-            OPTIONS="$OPTIONS --ssh-only"
-        fi
-        
-        # Atualizar o arquivo de serviço com as novas opções
-        sed -i "ExecStart=/usr/bin/proxy $OPTIONS --response \"$RESPONSE\"" >> $service_file
-        
-        echo "Parâmetros do serviço proxy-$service_number atualizados com sucesso."
-    else
-        echo "Arquivo de serviço não encontrado para o serviço proxy-$service_number.service"
-    fi
-}
+
 
 # Menu de gerenciamento
 while true; do
@@ -153,11 +117,10 @@ while true; do
     echo "Menu de Gerenciamento do Serviço Proxy:"
     echo "1. Configurar e Iniciar um Novo Serviço"
     echo "2. Parar e Remover um Serviço"
-    echo "3. Editar Parâmetros de um Serviço"
-    echo "4. Reiniciar um Serviço"
-    echo "5. Ver Status dos Serviços"
-    echo "6. Reinstalar o Proxy"
-    echo "7. Sair"
+    echo "3. Reiniciar um Serviço"
+    echo "4. Ver Status dos Serviços"
+    echo "5. Reinstalar o Proxy"
+    echo "6. Sair"
     
     read -p "Escolha uma opção: " choice
     
@@ -169,24 +132,21 @@ while true; do
             stop_and_remove_service
         ;;
         3)
-            edit_service_params
-        ;;
-        4)
             echo "Serviços em execução:"
             systemctl list-units --type=service --state=running | grep proxy-
             read -p "Digite o número do serviço a ser reiniciado: " service_number
              systemctl restart proxy-$service_number
             echo "Serviço proxy-$service_number reiniciado."
         ;;
-        5)
+        4)
             systemctl list-units --type=service --state=running | grep proxy-
         ;;
-        6)
+        5)
             echo "Desinstalando o proxy antes de reinstalar..."
             uninstall_proxy
             install_proxy
         ;;
-        7)
+        6)
             echo "Saindo."
             break
         ;;
