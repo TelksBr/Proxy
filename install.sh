@@ -139,7 +139,7 @@ edit_service_params() {
         fi
         
         # Atualizar o arquivo de serviço com as novas opções
-        sed -i "s/ExecStart=\/usr\/bin\/proxy.*/ExecStart=\/usr\/bin\/proxy $OPTIONS --response \"$RESPONSE\"/" "$service_file"
+        sed -i 's|ExecStart=/usr/bin/proxy.*|ExecStart=/usr/bin/proxy '"$OPTIONS"' --response "'"$RESPONSE"'"|' "$service_file"
         
         echo "Parâmetros do serviço proxy-$service_number atualizados com sucesso."
     else
