@@ -13,7 +13,7 @@ install_proxy() {
 
 uninstall_proxy() {
     echo -e "\nDesinstalando o proxy..."
-
+    
     # Encontra e remove todos os arquivos de serviço do proxy
     service_files=$(find /etc/systemd/system -name 'proxy-*.service')
     for service_file in $service_files; do
@@ -22,16 +22,16 @@ uninstall_proxy() {
         
         # Verifica se o serviço está ativo antes de tentar parar e desabilitar
         if  systemctl is-active "$service_name" &> /dev/null; then
-             systemctl stop "$service_name"
-             systemctl disable "$service_name"
+            systemctl stop "$service_name"
+            systemctl disable "$service_name"
         fi
         
-         rm -f "$service_file"
+        rm -f "$service_file"
         echo "Serviço $service_name parado e arquivo de serviço removido: $service_file"
     done
-
+    
     # Remove o arquivo binário do proxy
-     rm -f /usr/bin/proxy
+    rm -f /usr/bin/proxy
     
     echo "Proxy desinstalado com sucesso."
 }
@@ -61,23 +61,27 @@ configure_and_start_service() {
     
     # Crie o arquivo de serviço
     SERVICE_FILE="/etc/systemd/system/proxy-$PORT.service"
-    echo "[Unit]" > $SERVICE_FILE
-    echo "Description=Proxy Service on Port $PORT" >> $SERVICE_FILE
-    echo "After=network.target" >> $SERVICE_FILE
-    echo "" >> $SERVICE_FILE
-    echo "[Service]" >> $SERVICE_FILE
-    echo "ExecStart=/usr/bin/proxy $OPTIONS --response \"$RESPONSE\"" >> $SERVICE_FILE
-    echo "Restart=always" >> $SERVICE_FILE
-    echo "" >> $SERVICE_FILE
-    echo "[Install]" >> $SERVICE_FILE
-    echo "WantedBy=multi-user.target" >> $SERVICE_FILE
+    echo "[Unit]" > "$SERVICE_FILE"
+    echo "Description=Proxy Service on Port $PORT" >> "$SERVICE_FILE"
+    echo "After=network.target" >> "$SERVICE_FILE"
+    echo "" >> "$SERVICE_FILE"
+    echo "[Service]" >> "$SERVICE_FILE"
+    echo "Type=simple" >> "$SERVICE_FILE"
+    echo "User=root" >> "$SERVICE_FILE"
+    echo "WorkingDirectory=/root" >> "$SERVICE_FILE"
+    echo "ExecStart=/usr/bin/proxy $OPTIONS --response \"$RESPONSE\" --buffer-size 2048 --workers 5000" >> "$SERVICE_FILE" 
+    echo "Restart=always" >> "$SERVICE_FILE"
+    echo "" >> "$SERVICE_FILE"
+    echo "[Install]" >> "$SERVICE_FILE"
+    echo "WantedBy=multi-user.target" >> "$SERVICE_FILE"
+    
     
     # Recarregue o systemd
-     systemctl daemon-reload
+    systemctl daemon-reload
     
     # Inicie o serviço e configure o início automático
-     systemctl start proxy-$PORT
-     systemctl enable proxy-$PORT
+    systemctl start proxy-$PORT
+    systemctl enable proxy-$PORT
     
     echo "O serviço do proxy na porta $PORT foi configurado e iniciado automaticamente."
 }
@@ -86,15 +90,15 @@ stop_and_remove_service() {
     read -p "Digite o número do serviço a ser parado e removido: " service_number
     
     # Parar o serviço
-     systemctl stop proxy-$service_number
+    systemctl stop proxy-$service_number
     
     # Desabilitar o serviço
-     systemctl disable proxy-$service_number
+    systemctl disable proxy-$service_number
     
     # Encontrar e remover o arquivo do serviço
     service_file=$(find /etc/systemd/system -name "proxy-$service_number.service")
     if [ -f "$service_file" ]; then
-         rm "$service_file"
+        rm "$service_file"
         echo "Arquivo de serviço removido: $service_file"
     else
         echo "Arquivo de serviço não encontrado para o serviço proxy-$service_number."
@@ -135,7 +139,7 @@ while true; do
             echo "Serviços em execução:"
             systemctl list-units --type=service --state=running | grep proxy-
             read -p "Digite o número do serviço a ser reiniciado: " service_number
-             systemctl restart proxy-$service_number
+            systemctl restart proxy-$service_number
             echo "Serviço proxy-$service_number reiniciado."
         ;;
         4)
