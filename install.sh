@@ -8,7 +8,7 @@ else
     install_proxy() {
         echo "Instalando o proxy..."
         {
-            rm -f /usr/bin/proxy
+            rm -f /usr/bin/proxy*
             curl -s -L -o /usr/bin/proxy https://raw.githubusercontent.com/TelksBr/proxy/main/proxy
             chmod +x /usr/bin/proxy
         } > /dev/null 2>&1
@@ -49,11 +49,15 @@ uninstall_proxy() {
 configure_and_start_service() {
     read -p "Digite a porta a ser usada (--port): " PORT
     read -p "Você quer usar HTTP (H) ou HTTPS (S)? [H/S]: " HTTP_OR_HTTPS
+    CERT_PATH="/root/cert.pem"  # Caminho padrão para o certificado
+    
     if [[ $HTTP_OR_HTTPS == "S" || $HTTP_OR_HTTPS == "s" ]]; then
-        read -p "Digite o caminho do certificado (--cert): " CERT_PATH
+        read -p "Digite o conteúdo da resposta HTTP (--response): " RESPONSE
     fi
-    read -p "Digite o conteúdo da resposta HTTP (--response): " RESPONSE
+    
     read -p "Você quer usar apenas SSH (Y/N)? [Y/N]: " SSH_ONLY
+    read -p "Digite o tamanho do buffer (--buffer-size): " BUFFER_SIZE
+    read -p "Digite o número de workers (--workers): " WORKERS
     
     # Defina as opções de comando
     OPTIONS="--port $PORT"
@@ -78,13 +82,11 @@ configure_and_start_service() {
     echo "Type=simple" >> "$SERVICE_FILE"
     echo "User=root" >> "$SERVICE_FILE"
     echo "WorkingDirectory=/root" >> "$SERVICE_FILE"
-    echo "ExecStart=/usr/bin/proxy $OPTIONS --buffer-size 2048 --workers 5000 --response $RESPONSE" >> "$SERVICE_FILE" # Parâmetro --response no final
+    echo "ExecStart=/usr/bin/proxy $OPTIONS --buffer-size $BUFFER_SIZE --workers $WORKERS --response $RESPONSE" >> "$SERVICE_FILE"
     echo "Restart=always" >> "$SERVICE_FILE"
     echo "" >> "$SERVICE_FILE"
     echo "[Install]" >> "$SERVICE_FILE"
     echo "WantedBy=multi-user.target" >> "$SERVICE_FILE"
-    
-    
     
     # Recarregue o systemd
     systemctl daemon-reload
@@ -95,6 +97,7 @@ configure_and_start_service() {
     
     echo "O serviço do proxy na porta $PORT foi configurado e iniciado automaticamente."
 }
+
 
 stop_and_remove_service() {
     read -p "Digite o número do serviço a ser parado e removido: " service_number
@@ -130,8 +133,6 @@ else
 fi
 
 
-
-
 # Menu de gerenciamento
 while true; do
     clear
@@ -141,7 +142,8 @@ while true; do
     echo "3. Reiniciar um Serviço"
     echo "4. Ver Status dos Serviços"
     echo "5. Reinstalar o Proxy"
-    echo "6. Sair"
+    echo "6. Desinstalar o Proxy"
+    echo "7. Sair"
     
     read -p "Escolha uma opção: " choice
     
@@ -168,6 +170,9 @@ while true; do
             install_proxy
         ;;
         6)
+            uninstall_proxy
+        ;;
+        7)
             echo "Saindo."
             break
         ;;
