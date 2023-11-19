@@ -83,7 +83,7 @@ configure_and_start_service() {
     echo "Type=simple" >> "$SERVICE_FILE"
     echo "User=root" >> "$SERVICE_FILE"
     echo "WorkingDirectory=/root" >> "$SERVICE_FILE"
-    echo "ExecStart=/usr/bin/proxy $OPTIONS --buffer-size $BUFFER_SIZE --workers $WORKERS --response $RESPONSE" >> "$SERVICE_FILE"
+    echo "ExecStart=/usr/bin/proxy --token $OPTIONS --buffer-size $BUFFER_SIZE --workers $WORKERS --response $RESPONSE" >> "$SERVICE_FILE"
     echo "Restart=always" >> "$SERVICE_FILE"
     echo "" >> "$SERVICE_FILE"
     echo "[Install]" >> "$SERVICE_FILE"
